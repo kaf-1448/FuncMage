@@ -6,7 +6,7 @@ attifact = [
         "type": "fardi"
     },
     {
-        "name": "kaf",
+        "name": "farda",
         "power": 22,
         "type": "fardi"
     },
@@ -21,7 +21,7 @@ names = ["soh", "fah", "grok", "gpt"]
 
 
 def artifact_sorter(artifacts: list[dict]) -> list[dict]:
-    return sorted(artifacts, key=lambda art: art["power"])
+    return sorted(artifacts, key=lambda art: art["power"], reverse=True)
 
 
 def power_filter(mages: list[dict], min_power: int) -> list[dict]:
@@ -29,7 +29,7 @@ def power_filter(mages: list[dict], min_power: int) -> list[dict]:
 
 
 def spell_transformer(spells: list[str]) -> list[str]:
-    return list(map(lambda spell: f'*{spell}*', spells))
+    return list(map(lambda spell: f'* {spell} *', spells))
 
 
 def mage_stats(mages: list[dict]) -> dict:
@@ -44,17 +44,23 @@ def mage_stats(mages: list[dict]) -> dict:
             "avg_power": avg}
 
 
-print(artifact_sorter(attifact))
-print(power_filter(attifact, 10))
-print(spell_transformer(names))
-print(mage_stats(attifact))
-# for x in artifact_sorter(attifact):
-#     print(x["name"])
+def main() -> None:
+    print("Testing artifact sorter...")
+    artifact_sor = artifact_sorter(attifact)
+    print(f"{artifact_sor[0]['name']} ({artifact_sor[0]['power']}power)"
+          f" comes before "
+          f"{artifact_sor[1]['name']} ({artifact_sor[1]['power']}power)")
+
+    print()
+    print(power_filter(attifact, 10))
+
+    print("\nTesting spell transformer...")
+    speel_tr = " ".join(spell_transformer(names))
+    print(speel_tr)
+
+    print()
+    print(mage_stats(attifact))
 
 
-# def main() -> None:
-#     print(map(12, [3, 33, 3]))
-
-
-# if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+    main()
