@@ -29,11 +29,22 @@ def enchantment_factory(enchantment_type: str) -> Callable:
     return enchant
 
 
+def memory_vault() -> dict[str, Callable]:
+    memory = {}
+
+    def store(key: str, value) -> None:
+        memory[key] = value
+
+    def recall(key: str) -> str:
+        return memory.get(key, "Memory not found")
+
+    return {
+        "store": store,
+        "recall": recall
+    }
+
+
 def main() -> None:
-    # initial_powers = [65, 55, 24]
-    # power_additions = [18, 6, 8, 7, 20]
-    # enchantment_types = ['Frozen', 'Dark', 'Windy']
-    # items_to_enchant = ['Amulet', 'Wand', 'Sword', 'Armor']
 
     print("Testing mage counter...")
     counter_a = mage_counter()
@@ -54,6 +65,13 @@ def main() -> None:
     print(flame("Sword"))
     forzen = enchantment_factory("Frozen")
     print(forzen("Shield"))
+
+    print("\nTesting memory vault...")
+    vault = memory_vault()
+    vault["store"]("secret", 42)
+    print("Store 'secret' = 42")
+    print(f"Store 'secret' : {vault['recall']('secret')}")
+    print(f"Recall 'unknown': {vault['recall']('unknown')}")
 
 
 if __name__ == "__main__":
