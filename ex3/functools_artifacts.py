@@ -1,6 +1,6 @@
 import functools
 import operator
-from typing import Callable
+from typing import Callable, Any
 
 
 def spell_reducer(spells: list[int], operation: str) -> int:
@@ -22,16 +22,32 @@ def enchantment(power: int, element: str, target: str) -> str:
 
 
 def partial_enchanter(base_enchantment: Callable) -> dict[str, Callable]:
-    return {"base": functools.partial(base_enchantment, element="fire", power=50)}
+    return {"fire": functools.partial(
+        base_enchantment, element="fire", power=50),
+        "ice": functools.partial(
+        base_enchantment, element="ice", power=50),
+        "lightning": functools.partial(
+        base_enchantment, element="lightning", power=50)
+    }
+
+
+@functools.lru_cache(maxsize=128)
+def memoized_fibonacci(n: int) -> int:
+    if n < 2:
+        return n
+    return memoized_fibonacci(n-1) + memoized_fibonacci(n-2)
+
+
+def spell_dispatcher() -> Callable[[Any], str]:
+    pass
 
 
 def main() -> None:
     try:
         # data
-        # spell_powers = [47, 41, 42, 20, 41, 36]
-        spell_powers = [1, 2, 3, 4]
+        spell_powers = [47, 41, 42, 20, 41, 36]
         operations = ['add', 'multiply', 'max', 'min']
-        fibonacci_tests = [8, 13, 8]
+        fibonacci_tests = [0, 1, 10, 15]
 
         print("Testing spell reducer...")
         sum_spell = spell_reducer(spell_powers, operations[0])
@@ -45,9 +61,15 @@ def main() -> None:
         print("\nTesting memoized fibonacci...")
         fun1 = partial_enchanter(enchantment)
 
-        print(fun1["base"](target="sword"))
-        print(fun1["base"](target="ice"))
-        print(fun1["base"](target="water"))
+        print(fun1["fire"](target="sword"))
+        print(fun1["ice"](target="ice"))
+        print(fun1["lightning"](target="light"))
+
+        print("\nTesting memoized fibonacci...")
+        for i in range(len(fibonacci_tests)):
+            print(
+                f"Fib({fibonacci_tests[i]}): "
+                f"{memoized_fibonacci(fibonacci_tests[i])}")
 
     except ValueError as e:
         print(e)
