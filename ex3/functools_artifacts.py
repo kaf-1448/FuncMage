@@ -7,8 +7,8 @@ def spell_reducer(spells: list[int], operation: str) -> int:
     operators = {
         'add': operator.add,
         'multiply': operator.mul,
-        'min': min,
-        'max': max
+        'min': lambda x, y: min(x, y),
+        'max': lambda x, y: max(x, y)
     }
     if not spells:
         return 0
@@ -38,8 +38,26 @@ def memoized_fibonacci(n: int) -> int:
     return memoized_fibonacci(n-1) + memoized_fibonacci(n-2)
 
 
+# @functools.singledispatch
 def spell_dispatcher() -> Callable[[Any], str]:
-    pass
+
+    @functools.singledispatch
+    def dispatcher(value: Any):
+        return "Unknown type"
+
+    @dispatcher.register(int)
+    def _(value) -> str:
+        return f"damage spell: {value}"
+
+    @dispatcher.register(str)
+    def _(value):
+        return f"enchantment: {value}"
+
+    @dispatcher.register(list)
+    def _(value):
+        return f'multi-cas: {" ".join(map(str, value))}'
+
+    return dispatcher
 
 
 def main() -> None:
@@ -70,6 +88,13 @@ def main() -> None:
             print(
                 f"Fib({fibonacci_tests[i]}): "
                 f"{memoized_fibonacci(fibonacci_tests[i])}")
+
+        print("\nTesting spell dispatcher...")
+        spell = spell_dispatcher()
+        print(spell(42))
+        print(spell("fireball"))
+        print(spell([3, "spells"]))
+        print(spell({2, "spells"}))
 
     except ValueError as e:
         print(e)
